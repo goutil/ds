@@ -60,3 +60,25 @@ func NewTrie() *Trie {
 		},
 	}
 }
+
+func getKeys(n *Node, key string, entries *[]string) {
+	if n == nil || entries == nil {
+		return
+	}
+	if len(n.Next) == 0 && key != "" {
+		*entries = append(*entries, key)
+		return
+	}
+
+	for k, v := range n.Next {
+		newKey := key
+		newKey += string(k)
+		getKeys(v, newKey, entries)
+	}
+}
+
+func (t *Trie) Keys() []string {
+	entries := make([]string, 0)
+	getKeys(t.Root, "", &entries)
+	return entries
+}
