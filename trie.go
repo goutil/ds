@@ -1,17 +1,20 @@
-// Basic Trie implementation
+// Package ds provides some useful data structures that can save you some time
+// now and then.
 package ds
 
-type Node struct {
+// TrieNode represents a node the trie tree.
+type TrieNode struct {
 	Char  byte
-	Next  map[byte]*Node
+	Next  map[byte]*TrieNode
 	Value interface{}
 }
 
+// Trie represents a trie.
 type Trie struct {
-	Root *Node
+	Root *TrieNode
 }
 
-func add(node *Node, word string, p int, value interface{}) bool {
+func add(node *TrieNode, word string, p int, value interface{}) bool {
 	if node == nil {
 		return false
 	}
@@ -22,20 +25,21 @@ func add(node *Node, word string, p int, value interface{}) bool {
 	isNew := false
 	char := word[p]
 	if node.Next[char] == nil {
-		node.Next[char] = &Node{
+		node.Next[char] = &TrieNode{
 			Char: char,
-			Next: make(map[byte]*Node),
+			Next: make(map[byte]*TrieNode),
 		}
 		isNew = true
 	}
 	return add(node.Next[char], word, p+1, value) || isNew
 }
 
+// Insert creates or updates an entry in the trie.
 func (t *Trie) Insert(word string, value interface{}) bool {
 	return add(t.Root, word, 0, value)
 }
 
-func find(node *Node, word string, p int) interface{} {
+func find(node *TrieNode, word string, p int) interface{} {
 	if node == nil {
 		return nil
 	}
@@ -49,19 +53,22 @@ func find(node *Node, word string, p int) interface{} {
 	return find(node.Next[char], word, p+1)
 }
 
+// Find finds word in trie and returns its value. It returns nil if word is not
+// found.
 func (t *Trie) Find(word string) interface{} {
 	return find(t.Root, word, 0)
 }
 
+// NewTrie returns an initialized trie.
 func NewTrie() *Trie {
 	return &Trie{
-		Root: &Node{
-			Next: make(map[byte]*Node),
+		Root: &TrieNode{
+			Next: make(map[byte]*TrieNode),
 		},
 	}
 }
 
-func getKeys(n *Node, key string, entries *[]string) {
+func getKeys(n *TrieNode, key string, entries *[]string) {
 	if n == nil || entries == nil {
 		return
 	}
@@ -77,8 +84,9 @@ func getKeys(n *Node, key string, entries *[]string) {
 	}
 }
 
+// Keys returns an array with the trie keys.
 func (t *Trie) Keys() []string {
-	entries := make([]string, 0)
+	var entries = make([]string, 0)
 	getKeys(t.Root, "", &entries)
 	return entries
 }
