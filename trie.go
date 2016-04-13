@@ -2,6 +2,8 @@
 // now and then.
 package ds
 
+import "sync"
+
 // TrieNode represents a node the trie tree.
 type TrieNode struct {
 	Char  byte
@@ -13,6 +15,8 @@ type TrieNode struct {
 type Trie struct {
 	Root *TrieNode
 }
+
+var mu = &sync.Mutex{}
 
 func add(node *TrieNode, word string, p int, value interface{}) bool {
 	if node == nil {
@@ -36,6 +40,8 @@ func add(node *TrieNode, word string, p int, value interface{}) bool {
 
 // Insert creates or updates an entry in the trie.
 func (t *Trie) Insert(word string, value interface{}) bool {
+	mu.Lock()
+	defer mu.Unlock()
 	return add(t.Root, word, 0, value)
 }
 
@@ -56,6 +62,8 @@ func find(node *TrieNode, word string, p int) interface{} {
 // Find finds word in trie and returns its value. It returns nil if word is not
 // found.
 func (t *Trie) Find(word string) interface{} {
+	mu.Lock()
+	defer mu.Unlock()
 	return find(t.Root, word, 0)
 }
 
@@ -86,6 +94,8 @@ func getKeys(n *TrieNode, key string, entries *[]string) {
 
 // Keys returns an array with the trie keys.
 func (t *Trie) Keys() []string {
+	mu.Lock()
+	defer mu.Unlock()
 	var entries = make([]string, 0)
 	getKeys(t.Root, "", &entries)
 	return entries
